@@ -1,24 +1,45 @@
 const { debugPort } = require('process');
 
-var MongoClient = require('mongoose').MongoClient;
+var MongoClient = require('mongodb').MongoClient;
 var url =  'mongodb://localhost:27017/';
 var dbName = 'ZipZapZopDB';
 var collectionName = 'Association';
  
 // Connect to the database, creates collection if none exists
-MongoClient.connect(url, function (err, db) {
+MongoClient.connect(url, { useUnifiedTopology : true }, function (err, db) {
   if (err) {
     console.log('ERROR connecting to: ' + url + '. ' + err);
   } else {
     console.log('Successfully connected to: ' + url);
     var dbo = db.db(dbName);
-    dbo.createCollection(collectionName, function(err, res) {
+
+    dbo.listCollections().toArray(function (err, collections) {
       if (err) {
-        console.log('ERROR could not create collection');
+        throw err;
       } else {
-        console.log("Collection Exists");
+        // Check if collection has been created
+        var exists;
+        for (var i = 0; i < collections.length; i++) {
+          if (collections[i].name == collectionName) {
+            exists = true;
+            break;
+          }
+        }
+
+        // Create collection if it doesn't exist
+        if (!exists) {
+          dbo.createCollection(collectionName, function(err, res) {
+            if (err) {
+              console.log('ERROR could not create collection ' + err);
+            } else {
+              console.log("Collection Exists");
+            }
+            db.close();
+          });
+        } else {
+          db.close();
+        }
       }
-      db.close();
     });
   }
 });
