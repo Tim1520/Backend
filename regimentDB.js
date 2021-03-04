@@ -1,105 +1,7 @@
-var MongoClient = require('mongodb').MongoClient;
-var url =  'mongodb://localhost:27017/';
-var dbName = 'ZipZapZopDB';
-var collectionName = 'Regiments';
- 
-// Connect to the database, creates collection if none exists
-MongoClient.connect(url, { useUnifiedTopology : true }, function (err, db) {
-  if (err) {
-    console.log('ERROR connecting to: ' + url + '. ' + err);
-  } else {
-    console.log('Successfully connected to: ' + url);
-    var dbo = db.db(dbName);
+var db = require('./databaseInterface');
 
-    dbo.listCollections().toArray(function (err, collections) {
-      if (err) {
-        throw err;
-      } else {
-        // Check if collection has been created
-        var exists;
-        for (var i = 0; i < collections.length; i++) {
-          if (collections[i].name == collectionName) {
-            exists = true;
-            break;
-          }
-        }
-
-        // Create collection if it doesn't exist
-        if (!exists) {
-          dbo.createCollection(collectionName, function(err, res) {
-            if (err) {
-              console.log('ERROR could not create collection ' + err);
-            } else {
-              console.log("Collection Exists");
-            }
-            db.close();
-          });
-        } else {
-          db.close();
-        }
-      }
-    });
-  }
-});
-
-function insertData(obj, callback) {
-  // Connect to the database
-  MongoClient.connect(url, function (err, db) {
-    if(err) {
-      console.log('ERROR connecting to: ' + url + '. ' + err);
-    } else {
-      var dbo = db.db(dbName);
-      // Choose Database
-      dbo.collection(collectionName).insertOne(obj, function (err, res) {
-        // Run Callback
-        callback(err, res)
-
-        // Close Database connection
-        db.close();
-      });
-    }
-  });
-}
-
-// Grab all objects as an array from a query
-function getQuery(query, callback) {
-  // Connect to the database
-  MongoClient.connect(url, function (err, db) {
-    if(err) {
-      console.log('ERROR connecting to: ' + url + '. ' + err);
-    } else {
-      var dbo = db.db(dbName);
-      // Choose Database
-      dbo.collection(collectionName).find(query).toArray(function (err, res) {
-        // Run Callback
-        callback(err, res)
-
-        // Close Database connection
-        db.close();
-      });
-    }
-  });
-}
-
-// Grab all objects as an array from a query
-function setQuery(query, value, callback) {
-  // Connect to the database
-  MongoClient.connect(url, function (err, db) {
-    if(err) {
-      console.log('ERROR connecting to: ' + url + '. ' + err);
-    } else {
-      var dbo = db.db(dbName);
-      // Choose Database
-      dbo.collection(collectionName).updateOne(query, value, function (err, res) {
-        // Run Callback
-        callback(err, res)
-
-        // Close Database connection
-        db.close();
-      });
-    }
-  });
-}
+// Set collection name and initialize
+db.initialize('Regiments');
 
 // Query patient regiment from patient or doctor id
 function getPatientRegiment(userID, isDoctor, callback) {
@@ -113,7 +15,7 @@ function getPatientRegiment(userID, isDoctor, callback) {
   }
 
   // Run Query
-  getQuery(query, callback);
+  db.getQuery(query, callback);
 }
 
 // Set patient regiment from patient id
@@ -123,7 +25,7 @@ function setPatientRegiment(patientID, newRegiment, callback) {
   var setValue = { $set : { regiment : newRegiment } };
 
   // Run Query
-  setQuery(query, setValue, callback);
+  db.setQuery(query, setValue, callback);
 }
 
 // Add a new patient's regiment
@@ -136,5 +38,7 @@ function newPatientRegiment(doctorID, patientID, regimentObj, callback) {
     };
 
   // Insert object
-  insertData(dbObj, callback);
+  db.insertData(dbObj, callback);
 }
+
+module.exports = { getPatientRegiment, setPatientRegiment, newPatientRegiment };
