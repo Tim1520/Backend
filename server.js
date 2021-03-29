@@ -1,5 +1,6 @@
 const express = require('express');
 
+var admin = require('firebase-admin');
 
 const app = express();
 
@@ -7,8 +8,36 @@ app.use(express.json());
 
 const port = 8081;    //8081 placeholder
 
+//$env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\username\Downloads\service-account-file.json"
+
+
 // var loginToken = "placeholder";
 // var googleid = "12345";
+
+admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+    databaseURL: 'https://doctor-patient-access-default-rtdb.firebaseio.com'
+});
+
+app.get('/firebaseTest', (req,res) => {
+    //idToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImY4NDY2MjEyMTQxMjQ4NzUxOWJiZjhlYWQ4ZGZiYjM3ODYwMjk5ZDciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZG9jdG9yLXBhdGllbnQtYWNjZXNzIiwiYXVkIjoiZG9jdG9yLXBhdGllbnQtYWNjZXNzIiwiYXV0aF90aW1lIjoxNjE2OTAyNTQ1LCJ1c2VyX2lkIjoiRnlFclZ0VnRZcVhhbUNXOFhuSGxYbXlxcTVJMiIsInN1YiI6IkZ5RXJWdFZ0WXFYYW1DVzhYbkhsWG15cXE1STIiLCJpYXQiOjE2MTY5MDI1NDcsImV4cCI6MTYxNjkwNjE0NywiZW1haWwiOiJzZWIuZ29uemFsZXpzZy4xOTk5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInNlYi5nb256YWxlenNnLjE5OTlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.OOoa87ZE0PKstfbFBmwaISQi3btnjPE98TLPNHCuUJSaXXTdQVuT1xfBo1DOx7hjGtSfVmxZZ-Zw6Zp7slfiQl9jvHcuIVoYV000ak8SgwagEBxfXzIBDQl-yAUkUjNe5NGgBuGlG7Lh1dbYP_ZYifZxFYw6tJInl9AZWbUsh6wANpAWTLrz3K8FNACWnNIJTqlvkPBLFnDSWwZEsPAVWXPfPuKpn0vHtsgKDZlTyP1MiKnSHDorA6aVZm3H_a2nUp4saqDytp7ZKJeGBiAzNn-wuXy14Yb94z6-IXffYyjXg-_gsWt8-CWGHKrqNER6aV5YaqDcTTHBLPzScb4rVA"
+
+    idToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImY4NDY2MjEyMTQxMjQ4NzUxOWJiZjhlYWQ4ZGZiYjM3ODYwMjk5ZDciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZG9jdG9yLXBhdGllbnQtYWNjZXNzIiwiYXVkIjoiZG9jdG9yLXBhdGllbnQtYWNjZXNzIiwiYXV0aF90aW1lIjoxNjE2OTAyNjQwLCJ1c2VyX2lkIjoiRnlFclZ0VnRZcVhhbUNXOFhuSGxYbXlxcTVJMiIsInN1YiI6IkZ5RXJWdFZ0WXFYYW1DVzhYbkhsWG15cXE1STIiLCJpYXQiOjE2MTY5MDI2NDEsImV4cCI6MTYxNjkwNjI0MSwiZW1haWwiOiJzZWIuZ29uemFsZXpzZy4xOTk5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInNlYi5nb256YWxlenNnLjE5OTlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.nqyfxTC_piL1u3Vl5bVEOMSaMHHqNc7tVJhJAb8VBClRbtcO4gKZhCweNGca6zmtuhtfRKFLycEMbCnPX9fN83bugLI4cRrgNLKn3cOS_z8eFuLtl-U9ElLRDFnvqVYb7PcczG0dSsStbNp5rCRcBzZyEBq5wbln96-sk7AjICWZkPeyC2WgMRnvjQi1QKyTaeLKTyxLB4m8l2qc5A8BukUPwBfJ5ZAXhyeMXrbbvXE20teIAqkRdVl8lPNch8085cHc54zulnh4HvfSBC5cqY7YBE7E1kk-eq0u8LUjoC-lthScEzGaosUvAIiIMRoiMs62pMMI_2Mvj-JKkddGiw"
+
+    admin
+    .auth()
+    .verifyIdToken(idToken)
+    .then((decodedToken) => {
+        const uid = decodedToken.uid;
+            // ...
+        res.send(decodedToken);
+    })
+    .catch((error) => {
+        res.send("error");
+        // Handle error
+    });
+
+})
 
 app.get('/UpdateRegiment', (req, res) => {
 
