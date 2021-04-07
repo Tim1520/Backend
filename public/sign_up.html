@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-    <title>Doctor Portal - Sign In</title>
+    <title>Doctor Portal - Sign Up</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap links -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="sign_up.css">
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -30,26 +30,33 @@
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
 
-    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="sign_up.js"></script>
 
 </head>
 
 <body>
     <div class="text-center">
-        <div class="form-signin">
-            <img class="mb-4" src="title_image_doctor-removebg.png" alt="" height="72" />
+        <div class="form-signin" id="sign_up" style="display: block;">
 
-            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <h1 class="h3 mb-3 font-weight-normal">New User - Doctor</h1>
+
+            <label for="fullname" class="sr-only">Full Name</label>
+            <input type="text" id="fullname" class="form-control" placeholder="Full Name" required autofocus>
 
             <label for="inputEmail" class="sr-only">Email address</label>
             <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
 
             <label for="inputPassword" class="sr-only">Password</label>
             <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+    
+            <label for="inputPassword" class="sr-only">Confirm Password</label>
+            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password" required>
 
-            <button class="btn btn-lg btn-secondary btn-block" type="submit" onclick="login()">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="signup()">Sign up</button>
         </div>
+        <button class="btn btn-lg btn-success" id="success_button" style="display: none;" onclick="goback()">Success: Go Back</button>
     </div>
 </body>
 

@@ -15,15 +15,20 @@ firebase.initializeApp(firebaseConfig);
 
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-        if (!window.location.href.includes("dashboard.html")) {
-            window.location.href = "dashboard.html";
-        }
-    } else {
-        if (!window.location.href.includes("index.html")) {
-            window.location.href = "index.html";
-        }
+        // Logged in
+        firebase.database().ref('Doctors/' + user.uid).on('value', (snapshot) => {
+            var doctorProfile = snapshot.val();
+            
+            if (doctorProfile) {
+                window.location.href = "dashboard.html";
+            } else {
+                logout();
+            }
+        });
     }
 });
+
+var regimentElements = [];
 
 function login() {
 
@@ -46,6 +51,7 @@ function login() {
 function logout() {
     firebase.auth().signOut().then(() => {
         // Sign-out successful.
+        window.alert("User does not have doctor privileges");
     }).catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -53,19 +59,6 @@ function logout() {
         window.alert("Error (" + errorCode + ") " + errorMessage)
     });
 }
-
-function patientSelect(patient) {
-    document.getElementById("selected-patient").innerHTML = patient;
-}
-
-function openOverlay() {
-    document.getElementById("new-user-overlay").style.display = "block";
-}
-
-function closeOverlay() {
-    document.getElementById("new-user-overlay").style.display = "none";
-}
-
 
 // Example POST method implementation:
 async function postData(url = '', data = {}) {

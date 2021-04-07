@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dashboard Template for Bootstrap</title>
+    <title>Doctor Portal</title>
 
     <!-- Bootstrap core CSS -->
     <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,9 +15,15 @@
     <!-- Custom styles for this template -->
     <link href="dashboard.css" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
@@ -26,13 +32,19 @@
         https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
 
-    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="dashboard.js"></script>
 </head>
 
 <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Docotor Portal</a>
+        <a class="navbar-brand col-sm-3 col-md-2 mr-auto" href="#">Docotor Portal</a>
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="sign_up.html">Add New Doctor</a>
+            </li>
+        </ul>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
                 <a class="nav-link" href="#" onclick="logout()">Sign out</a>
@@ -42,28 +54,72 @@
 
     <div class="container-fluid">
         <div class="row">
-
-            <main role="main" class="col-md-9 col-lg-10 pt-3 px-4">
+            <main role="main" class="col pt-3 px-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2" id="welcome"></h1>
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2" id="selected-patient">Select a Patient</h1>
                     <div class="dropdown show">
-                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Patient
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Patient Selection
                         </a>
 
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <div id="patients">
-
-                                <a class="dropdown-item" href="#" onclick="patientSelect('Patient1')">Patient1</a>
-                                <a class="dropdown-item" href="#" onclick="patientSelect('Patient2')">Patient2</a>
-                            </div>
-
-                            <a class="dropdown-item" href="#" onclick="openOverlay()">Add patient...</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" id="patients">
                         </div>
 
                     </div>
-                    <h1 class="h2" id="selected-patient">Select a Patient</h1>
                 </div>
 
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h3">Regiments</h1>
+                    <button type="button" class="btn btn-secondary mb-2" data-toggle="modal" data-target="#newRegiment">
+                        New Regiment
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Duration</th>
+                                <th>Type</th>
+                                <th>Amplitude</th>
+                                <th>Frequency</th>
+                            </tr>
+                        </thead>
+                        <tbody id="regiment_table">
+                            <tr>
+                                <td rowspan="2">1,001</td>
+                                <td rowspan="2">sit</td>
+                                <td>Lorem</td>
+                                <td>ipsum</td>
+                                <td>dolor</td>
+                            </tr>
+                            <tr>
+                                <td>amet</td>
+                                <td>consectetur</td>
+                                <td>adipiscing</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">1,001</td>
+                                <td rowspan="2">sit</td>
+                                <td>Lorem</td>
+                                <td>ipsum</td>
+                                <td>dolor</td>
+                            </tr>
+                            <tr>
+                                <td>amet</td>
+                                <td>consectetur</td>
+                                <td>adipiscing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h1 class="h3">Usage Data</h1>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
@@ -92,6 +148,46 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="newRegiment" tabindex="-1" role="dialog"
+                    aria-labelledby="newRegimentLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="newRegimentLabel">New Regiment</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle mb-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      + Wave Type
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="#" onclick="appendWave('Sine', true)">Sine</a>
+                                        <a class="dropdown-item" href="#" onclick="appendWave('Square', true)">Square</a>
+                                        <a class="dropdown-item" href="#" onclick="appendWave('Triangle', true)">Triangle</a>
+                                        <a class="dropdown-item" href="#" onclick="appendWave('Random', false)">Random</a>
+                                        <a class="dropdown-item" href="#" onclick="appendWave('Offset', false)">Offset</a>
+                                    </div>
+                                </div>
+                                <div id="regiment_waves"></div>
+                                <div class="input-group mb-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-sm">Duration</span>
+                                    </div>
+                                    <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="clearRegiment()">Clear</button>
+                                <button type="button" class="btn btn-primary">Send Regiment</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
