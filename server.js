@@ -3,10 +3,12 @@ const express = require('express');
 var admin = require('firebase-admin');
 
 const app = express();
+var path = require('path');
 
 app.use(express.json());
+app.use(express.static("public"));
 
-const port = 8081;    //8081 placeholder
+const port = 80;    //8081 placeholder
 
 //$env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\username\Downloads\service-account-file.json"
 

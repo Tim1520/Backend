@@ -37,6 +37,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
 });
 
+var xhr = new XMLHttpRequest();
 var regimentElements = [];
 var currentPatient = null;
 
