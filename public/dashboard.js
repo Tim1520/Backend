@@ -1,8 +1,3 @@
-// Your web app's Firebase configuration
-
-const { json } = require("body-parser");
-const { application } = require("express");
-
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 var firebaseConfig = {
     apiKey: "AIzaSyBaMRoLTXNSnwcwqrsGECoasCBBzBQHWLQ",
@@ -149,15 +144,15 @@ function sendRegimen() {
 
         sumAmplitude = fullRegimen.offset;
 
-        for (regimen in regimentElements) {
+        for (var i = 0; i < regimentElements.length; i++) {
             var wave = {
-                name: regimen.type,
-                amplitude: parseFloat(regimen.ampInput.value),
+                name: regimentElements[i].type,
+                amplitude: parseFloat(regimentElements[i].ampInput.value),
                 frequency: 0.0
             };
 
-            if (regimen.freqInput != null) {
-                wave.frequency = parseFloat(regimen.freqInput.value);
+            if (regimentElements[i].freqInput != null) {
+                wave.frequency = parseFloat(regimentElements[i].freqInput.value);
             }
 
             sumAmplitude += wave.amplitude;
@@ -170,7 +165,7 @@ function sendRegimen() {
         } else {
             var xhr = new XMLHttpRequest();
 
-            var url = "";
+            var url = "/doctorAddRegimen";
 
             var data = {
                 token: idToken,

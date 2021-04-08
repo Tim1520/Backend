@@ -1,4 +1,5 @@
 const express = require('express');
+const regimentDB = require('./regimentDB');
 
 var admin = require('firebase-admin');
 
@@ -25,14 +26,15 @@ admin.initializeApp({
 app.post('/doctorAddRegimen', (req,res) => {
     idToken = req.body.token;
 
+    console.log("Call made");
     admin
     .auth()
     .verifyIdToken(idToken)
     .then((decodedToken) => {
+        console.log("Sucessfully decoded doctor token")
         const uid = decodedToken.uid;
             // ...
-        
-        newPatientRegiment(decodedToken.uid, req.body.patientID, req.body.data, (err, res) => {
+        regimentDB.newPatientRegiment(decodedToken.uid, req.body.patientID, req.body.data, (err, result) => {
             if (err)
             {
                 res.status(400).send(err);
@@ -48,6 +50,7 @@ app.post('/doctorAddRegimen', (req,res) => {
     })
     .catch((error) => {
         res.send("Error with firebase authentication token");
+        console.log(error)
         // Handle error
     });
 
