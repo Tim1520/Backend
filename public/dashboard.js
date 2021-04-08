@@ -24,7 +24,7 @@ firebase.auth().onAuthStateChanged(function (user) {
                 var patients = snapshot.val();
 
                 for (var patient in patients) {
-                    if (patients[patient].doctorEmail == doctorProfile.email) {
+                    if (patients[patient].doctorEmail == "seb.gonzalezsg.1999@gmail.com") {
                         addPatient(patient, patients[patient].fullName);
                     }
                 }
@@ -66,6 +66,38 @@ function logout() {
 function patientSelect(patientUID, patientName) {
     document.getElementById("selected-patient").innerHTML = patientName;
     currentPatient = patientUID;
+
+    firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+
+        var xhr = new XMLHttpRequest();
+
+        var url = "/doctorGetRegimens";
+
+        var data = {
+            token: idToken,
+            patientID: currentPatient
+        };
+
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function () {
+            if (xhr.status != 200) {
+                window.alert("Error(" + xhr.status + ") " + xhr.statusText);
+            } else {
+                window.alert(xhr.response);
+            }
+        }
+
+        xhr.onerror = function () {
+            window.alert("Request Failed");
+        }
+
+        xhr.send(JSON.stringify(data));
+
+    }).catch(function (error) {
+        // Handle error
+    });
 }
 
 function createInput(title) {
@@ -170,11 +202,23 @@ function sendRegimen() {
             var data = {
                 token: idToken,
                 patientID: currentPatient,
-                data: fullRegimen 
+                data: fullRegimen
             };
 
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onload = function () {
+                if (xhr.status != 200) {
+                    window.alert("Error(" + xhr.status + ") " + xhr.statusText);
+                } else {
+                    clearRegiment();
+                }
+            }
+
+            xhr.onerror = function () {
+                window.alert("Request Failed");
+            }
 
             xhr.send(JSON.stringify(data));
 

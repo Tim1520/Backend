@@ -15,7 +15,19 @@ function getPatientRegiment(userID, isDoctor, callback) {
     }
 
     // Run Query
-    db.getQuery(query, callback);
+    db.getQuery(query, function (err, res) {
+        if (err) {
+            callback(err, res);
+        } else {
+            var array = [];
+            for(var i = 0; i < res.length; i++)
+            {
+                array.push(res[i].regiment);
+            }
+            console.log(array);
+            callback(err, array);
+        }
+    });
 }
 
 // Set patient regiment from patient id
