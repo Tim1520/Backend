@@ -89,6 +89,39 @@ app.post('/doctorGetRegimens', (req,res) => {
 
 })
 
+app.post('/patientGetRegimens', (req,res) => {
+    idToken = req.body.token;
+
+    console.log("Call made");
+    admin
+    .auth()
+    .verifyIdToken(idToken)
+    .then((decodedToken) => {
+        console.log("Sucessfully decoded token")
+        const uid = decodedToken.uid;
+            // ...
+        regimentDB.getPatientRegiment(uid, false, (err, result) => {
+            if (err)
+            {
+                res.status(400).send(err);
+            }
+            else
+            {
+                res.status(200).send(result);
+            }
+            
+        }  )
+
+
+    })
+    .catch((error) => {
+        res.send("Caught an error, check server logs");
+        console.log(error)
+        // Handle error
+    });
+
+})
+
 //Doctor get list of regimen from patient uid
 
 app.get('/firebaseTest', (req,res) => {
