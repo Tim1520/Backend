@@ -63,9 +63,64 @@ function logout() {
     });
 }
 
-function patientSelect(patientUID, patientName) {
-    document.getElementById("selected-patient").innerHTML = patientName;
-    currentPatient = patientUID;
+function updateTable(regimens) {
+    var table = document.getElementById("regiment_table");
+
+    var rowElements = [];
+    var col;
+    for (var i = 0; i < regimens.length; i++) {
+        col = document.createElement("TD");
+        col.setAttribute("rowspan", regimens[i].waves.length.toString());
+        col.innerHTML = regimens[i].name;
+
+        rowElements.push(col);
+
+        col = document.createElement("TD");
+        col.setAttribute("rowspan", regimens[i].waves.length.toString());
+        col.innerHTML = regimens[i].duration.toString();
+        
+        rowElements.push(col);
+
+        col = document.createElement("TD");
+        col.setAttribute("rowSpan", regimens[i].waves.length.toString());
+        col.innerHTML = regimens[i].offset.toString();
+        
+        rowElements.push(col);
+
+        for (var j = 0; j < regimens[i].waves.length; j++) {
+            var wave = regimens[i].waves[j];
+
+            col = document.createElement("TD");
+            col.innerHTML = wave.name;
+
+            rowElements.push(col);
+
+            
+            col = document.createElement("TD");
+            col.innerHTML = wave.frequency.toString();
+
+            rowElements.push(col);
+
+            col = document.createElement("TD");
+            col.innerHTML = wave.amplitude.toString();
+
+            rowElements.push(col);
+
+            var row = document.createElement("TR");
+
+            for (var k = 0; k < rowElements.length; k++) {
+                row.appendChild(rowElements[k]);
+            }
+
+            table.appendChild(row);
+            rowElements = [];
+        }
+    }
+
+}
+
+function getPatientRegimens() {
+    document.getElementById("regiment_table").innerHTML = ""
 
     firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
 
@@ -85,7 +140,7 @@ function patientSelect(patientUID, patientName) {
             if (xhr.status != 200) {
                 window.alert("Error(" + xhr.status + ") " + xhr.statusText);
             } else {
-                window.alert(xhr.response);
+                updateTable(JSON.parse(xhr.response));
             }
         }
 
@@ -98,6 +153,14 @@ function patientSelect(patientUID, patientName) {
     }).catch(function (error) {
         // Handle error
     });
+}
+
+function patientSelect(patientUID, patientName) {
+    document.getElementById("selected-patient").innerHTML = patientName;
+    currentPatient = patientUID;
+    document.getElementById("patient-info").style.display = "block";
+
+    getPatientRegimens();
 }
 
 function createInput(title) {
@@ -162,6 +225,9 @@ function appendWave(type, hasFreq) {
 function clearRegiment() {
     var listDiv = document.getElementById("regiment_waves");
     listDiv.innerHTML = "";
+    document.getElementById("regiment_name").value = "";
+    document.getElementById("regiment_offset").value = "";
+    document.getElementById("regiment_duration").value = "";
     regimentElements = [];
 }
 
@@ -211,8 +277,11 @@ function sendRegimen() {
             xhr.onload = function () {
                 if (xhr.status != 200) {
                     window.alert("Error(" + xhr.status + ") " + xhr.statusText);
+                    document.getElementById('success').style.display = 'none';
                 } else {
                     clearRegiment();
+                    getPatientRegimens();
+                    document.getElementById('success').style.display = 'block';
                 }
             }
 
