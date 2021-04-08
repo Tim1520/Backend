@@ -1,4 +1,8 @@
 // Your web app's Firebase configuration
+
+const { json } = require("body-parser");
+const { application } = require("express");
+
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 var firebaseConfig = {
     apiKey: "AIzaSyBaMRoLTXNSnwcwqrsGECoasCBBzBQHWLQ",
@@ -13,14 +17,14 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-firebase.auth().onAuthStateChanged(function(user) {
+firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // Logged in
         firebase.database().ref('Doctors/' + user.uid).on('value', (snapshot) => {
             var doctorProfile = snapshot.val();
-            
+
             document.getElementById("welcome").innerHTML = "Welcome " + doctorProfile.fullName;
-            
+
             firebase.database().ref('Patients/').on('value', (snapshot) => {
                 var patients = snapshot.val();
 
@@ -37,7 +41,6 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
 });
 
-var xhr = new XMLHttpRequest();
 var regimentElements = [];
 var currentPatient = null;
 
@@ -102,26 +105,7 @@ function appendWave(type, hasFreq) {
 
     var regimentElement = {};
 
-    switch (type) {
-        case "Sine":
-            regimentElement.type = "SINE";
-            break;
-            
-        case "Random":
-            regimentElement.type = "ADD_RANDOM";
-            break;
-            
-        case "Square":
-            regimentElement.type = "ADD_SQUARE";
-            break;
-            
-        case "Triangle":
-            regimentElement.type = "ADD_TRIANGLE";
-            break;
-        default:
-            regimentElement.type = "ADD_OFFSET";
-            break;
-    }
+    regimentElement.type = type.toLowerCase();
 
     var boundingDiv = document.createElement("DIV");
     boundingDiv.setAttribute("class", "d-flex flex-column pb-2 mb-3 border-bottom");
@@ -134,14 +118,14 @@ function appendWave(type, hasFreq) {
 
     amplitude = createInput("Amplitude");
     boundingDiv.appendChild(amplitude[0]);
-    regimentElement.freqInput = amplitude[1];
+    regimentElement.ampInput = amplitude[1];
 
     if (hasFreq) {
         frequency = createInput("Frequency");
         boundingDiv.appendChild(frequency[0]);
-        regimentElement.ampImput = frequency[1];
+        regimentElement.freqInput = frequency[1];
     } else {
-        regimentElement.ampImput = null;
+        regimentElement.freqInput = null;
     }
 
     regimentElements.push(regimentElement);
@@ -152,4 +136,55 @@ function clearRegiment() {
     var listDiv = document.getElementById("regiment_waves");
     listDiv.innerHTML = "";
     regimentElements = [];
+}
+
+function sendRegimen() {
+    firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+        var fullRegimen = {
+            name: document.getElementById("regiment_name").value,
+            offset: parseFloat(document.getElementById("regiment_offset").value),
+            duration: parseFloat(document.getElementById("regiment_duration").value),
+            waves: []
+        };
+
+        sumAmplitude = fullRegimen.offset;
+
+        for (regimen in regimentElements) {
+            var wave = {
+                name: regimen.type,
+                amplitude: parseFloat(regimen.ampInput.value),
+                frequency: 0.0
+            };
+
+            if (regimen.freqInput != null) {
+                wave.frequency = parseFloat(regimen.freqInput.value);
+            }
+
+            sumAmplitude += wave.amplitude;
+
+            fullRegimen.waves.push(wave);
+        }
+
+        if (sumAmplitude > 1.0) {
+            window.alert("Sum of amplitude greater than 1");
+        } else {
+            var xhr = new XMLHttpRequest();
+
+            var url = "";
+
+            var data = {
+                token: idToken,
+                patientID: currentPatient,
+                data: fullRegimen 
+            };
+
+            xhr.open("POST", url);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.send(JSON.stringify(data));
+
+        }
+    }).catch(function (error) {
+        // Handle error
+    });
 }
