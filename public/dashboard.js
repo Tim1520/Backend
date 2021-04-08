@@ -24,7 +24,7 @@ firebase.auth().onAuthStateChanged(function (user) {
                 var patients = snapshot.val();
 
                 for (var patient in patients) {
-                    if (patients[patient].doctorEmail == "seb.gonzalezsg.1999@gmail.com") {
+                    if (patients[patient].doctorEmail == doctorProfile.email) {
                         addPatient(patient, patients[patient].fullName);
                     }
                 }
