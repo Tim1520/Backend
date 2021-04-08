@@ -49,7 +49,40 @@ app.post('/doctorAddRegimen', (req,res) => {
 
     })
     .catch((error) => {
-        res.send("Error with firebase authentication token");
+        res.send("Caught an error, check server logs");
+        console.log(error)
+        // Handle error
+    });
+
+})
+
+app.post('/doctorGetRegimens', (req,res) => {
+    idToken = req.body.token;
+
+    console.log("Call made");
+    admin
+    .auth()
+    .verifyIdToken(idToken)
+    .then((decodedToken) => {
+        console.log("Sucessfully decoded token")
+        const uid = decodedToken.uid;
+            // ...
+        regimentDB.getPatientRegiment(req.body.patientID, false, (err, result) => {
+            if (err)
+            {
+                res.status(400).send(err);
+            }
+            else
+            {
+                res.status(200).send(result);
+            }
+            
+        }  )
+
+
+    })
+    .catch((error) => {
+        res.send("Caught an error, check server logs");
         console.log(error)
         // Handle error
     });
